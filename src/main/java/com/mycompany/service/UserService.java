@@ -113,7 +113,7 @@ public class UserService {
                 .compact();
 
         // Build the reset link
-        String resetLink = "http://localhost:3000/reset-password?token=" + token;
+        String resetLink = frontendUrl.replaceAll("/$", "") + "/reset-password?token=" + token;
 
         // Send the email
         mailer.send(Mail.withText(
