@@ -144,7 +144,8 @@ public class UserService {
                 .compact();
 
         // Build the verification link
-        String verificationLink = frontendUrl + "/verify-email?token=" + token;
+        String verificationLink = frontendUrl.replaceAll("/$", "") + "/verify-email?token=" + token;
+
 
 
 
