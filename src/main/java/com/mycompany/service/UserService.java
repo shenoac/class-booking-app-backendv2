@@ -29,6 +29,10 @@ public class UserService {
     @ConfigProperty(name = "app.server.url")
     String serverUrl;
 
+    @ConfigProperty(name = "app.frontend.url")
+    String frontendUrl;
+
+
     // This method is unchanged, it handles resetting the password
     public boolean resetPassword(String token, String newPassword) {
         try {
@@ -140,7 +144,7 @@ public class UserService {
                 .compact();
 
         // Build the verification link
-        String verificationLink = serverUrl + "/auth/verify-email?token=" + token;
+        String verificationLink = frontendUrl + "/verify-email?token=" + token;
 
 
 
