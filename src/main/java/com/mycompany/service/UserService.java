@@ -14,8 +14,6 @@ import io.jsonwebtoken.Claims;
 import io.quarkus.mailer.Mailer;
 import io.quarkus.mailer.Mail;
 import jakarta.transaction.Transactional;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
 
 @ApplicationScoped
 public class UserService {
@@ -25,13 +23,6 @@ public class UserService {
 
     @Inject
     EntityManager entityManager;
-
-    @ConfigProperty(name = "app.server.url")
-    String serverUrl;
-
-    @ConfigProperty(name = "app.frontend.url")
-    String frontendUrl;
-
 
     // This method is unchanged, it handles resetting the password
     public boolean resetPassword(String token, String newPassword) {
@@ -113,7 +104,7 @@ public class UserService {
                 .compact();
 
         // Build the reset link
-        String resetLink = frontendUrl.replaceAll("/$", "") + "/reset-password?token=" + token;
+        String resetLink = "http://localhost:3000/reset-password?token=" + token;
 
         // Send the email
         mailer.send(Mail.withText(
@@ -144,9 +135,7 @@ public class UserService {
                 .compact();
 
         // Build the verification link
-        String verificationLink = frontendUrl.replaceAll("/$", "") + "/verify-email?token=" + token;
-
-
+        String verificationLink = "http://localhost:8080/auth/verify-email?token=" + token;
 
 
         // Send the email

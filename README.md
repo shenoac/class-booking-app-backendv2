@@ -1,7 +1,7 @@
 # User Management System for Art E-commerce Platform
 
 ## Project Overview
-This project is a part of a full-stack booking platform that allows students to book classes to learn how to paint online. The user management system is built using **Java/Quarkus** and integrated with a **React/Node.js/Express** frontend.
+This project is a part of a full-stack e-commerce platform that allows artists to sell their artwork online. The user management system is built using **Java/Quarkus** and integrated with a **React/Node.js/Express** frontend.
 
 ## Goals
 - Implement secure user authentication and authorization (Artists and Buyers).
