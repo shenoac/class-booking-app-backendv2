@@ -1,3 +1,5 @@
+node_modules
+
 #Maven
 target/
 pom.xml.tag

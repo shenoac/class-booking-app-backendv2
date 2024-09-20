@@ -14,17 +14,23 @@ import io.jsonwebtoken.Claims;
 import io.quarkus.mailer.Mailer;
 import io.quarkus.mailer.Mail;
 import jakarta.transaction.Transactional;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 public class UserService {
 
     @Inject
-    Mailer mailer;  // Inject the Quarkus Mailer
+    Mailer mailer;
 
     @Inject
     EntityManager entityManager;
 
-    // This method is unchanged, it handles resetting the password
+    @ConfigProperty(name = "app.frontend.url")
+    String frontendUrl;
+
+    @ConfigProperty(name = "app.server.url")
+    String serverUrl;
+
     public boolean resetPassword(String token, String newPassword) {
         try {
             // Parse and validate the JWT token
@@ -57,7 +63,7 @@ public class UserService {
         }
     }
 
-    // This method retrieves the role of a user
+
     public String getUserRole(String username) {
         TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class);
         query.setParameter("email", username);
@@ -87,9 +93,7 @@ public class UserService {
         return false;
     }
 
-    // This method generates the password reset token and sends it via email
     public boolean sendPasswordResetToken(String email) {
-        // Use Panache to find the user by email
         User user = User.find("email", email).firstResult();
 
         if (user == null) {
@@ -98,13 +102,13 @@ public class UserService {
 
         // Generate a password reset token (JWT)
         String token = Jwts.builder()
-                .setSubject(user.id.toString())  // Assuming getId() exists in User entity
-                .setExpiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000)) // Token expires in 15 minutes
-                .signWith(SignatureAlgorithm.HS256, JwtUtil.getSecretKey())  // Ensure you are using the correct secret key
+                .setSubject(user.id.toString())
+                .setExpiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000)) // 15-minute expiration
+                .signWith(SignatureAlgorithm.HS256, JwtUtil.getSecretKey())
                 .compact();
 
-        // Build the reset link
-        String resetLink = "http://localhost:3000/reset-password?token=" + token;
+        // Build the reset link using the frontend URL
+        String resetLink = frontendUrl.replaceAll("/$", "") + "/reset-password?token=" + token;
 
         // Send the email
         mailer.send(Mail.withText(
@@ -116,27 +120,25 @@ public class UserService {
                         + "If you didn't request this, please ignore this email."
         ));
 
-        return true;  // Indicate that the email was sent
+        return true;
     }
 
     public boolean sendEmailVerificationToken(String email) {
-        // Use Panache to find the user by email
         User user = User.find("email", email).firstResult();
 
         if (user == null) {
-            return false; // Email not found
+            return false;
         }
 
         // Generate an email verification token (JWT)
         String token = Jwts.builder()
-                .setSubject(user.id.toString())  // Use the user ID as the subject
-                .setExpiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) // Token expires in 24 hours
+                .setSubject(user.id.toString())
+                .setExpiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) // 24-hour expiration
                 .signWith(SignatureAlgorithm.HS256, JwtUtil.getSecretKey())
                 .compact();
 
-        // Build the verification link
-        String verificationLink = "http://localhost:8080/auth/verify-email?token=" + token;
-
+        // Build the verification link using the server URL
+        String verificationLink = frontendUrl.replaceAll("/$", "") + "/verify-email?token=" + token;
 
         // Send the email
         mailer.send(Mail.withText(
