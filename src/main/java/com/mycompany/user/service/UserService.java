@@ -1,12 +1,12 @@
-package com.mycompany.service;
+package com.mycompany.user.service;
 
-import com.mycompany.util.JwtUtil;
+import com.mycompany.user.util.JwtUtil;
 import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import com.mycompany.resource.User;
+import com.mycompany.user.model.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;

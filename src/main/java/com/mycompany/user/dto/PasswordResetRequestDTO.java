@@ -1,4 +1,4 @@
-package com.mycompany.dto;
+package com.mycompany.user.dto;
 
 public class PasswordResetRequestDTO {
     private String email;

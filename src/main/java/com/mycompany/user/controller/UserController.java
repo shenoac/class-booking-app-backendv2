@@ -1,10 +1,10 @@
-package com.mycompany.resource;
+package com.mycompany.user.controller;
 
-import com.mycompany.dto.*;
-import com.mycompany.TokenResponse;
-import com.mycompany.util.JwtUtil;
-import com.mycompany.dto.PasswordChangeDTO;
-import com.mycompany.service.UserService; // Import UserService
+import com.mycompany.user.dto.*;
+import com.mycompany.user.TokenResponse;
+import com.mycompany.user.model.User;
+import com.mycompany.user.util.JwtUtil;
+import com.mycompany.user.service.UserService; // Import UserService
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject; // Import Inject
 import jakarta.transaction.Transactional;
@@ -18,7 +18,7 @@ import jakarta.transaction.TransactionManager;
 @Path("/auth")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class UserResource {
+public class UserController {
 
     @Inject
     UserService userService; // Inject UserService

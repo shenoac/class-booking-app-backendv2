@@ -1,4 +1,4 @@
-package com.mycompany;
+package com.mycompany.user;
 
 public class TokenResponse {
     public String token;

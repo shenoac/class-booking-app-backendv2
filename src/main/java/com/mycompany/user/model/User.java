@@ -1,4 +1,4 @@
-package com.mycompany.resource;
+package com.mycompany.user.model;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.security.jpa.Password;
