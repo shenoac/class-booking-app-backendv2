@@ -1,17 +1,21 @@
-# Use a base image with OpenJDK
-FROM openjdk:21-slim
+FROM openjdk:17-slim AS build
 
-# Set the working directory in the container
+ENV MAVEN_VERSION=3.8.7
+ENV MAVEN_HOME=/opt/maven
+ENV PATH=${MAVEN_HOME}/bin:${PATH}
+
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -fsSL https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz | tar xz -C /opt && \
+    mv /opt/apache-maven-${MAVEN_VERSION} ${MAVEN_HOME} && \
+    apt-get clean
+
+
 WORKDIR /app
 
-# Copy all necessary files from the target/quarkus-app folder into the container
-COPY target/quarkus-app/quarkus-run.jar /app/quarkus-run.jar
-COPY target/quarkus-app/lib/ /app/lib/
-COPY target/quarkus-app/app/ /app/app/
-COPY target/quarkus-app/quarkus/ /app/quarkus/
 
-# Expose the port the app runs on (default is 8080)
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src/main/java ./src/main/java
 EXPOSE 8080
-
-# Run the Quarkus JAR file
-CMD ["java", "-jar", "/app/quarkus-run.jar"]
+CMD ["mvn", "quarkus:dev"]
