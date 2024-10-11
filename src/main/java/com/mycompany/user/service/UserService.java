@@ -108,7 +108,7 @@ public class UserService {
                 .compact();
 
         // Build the reset link using the frontend URL
-        String resetLink = frontendUrl.replaceAll("/$", "") + "/reset-password?token=" + token;
+        String resetLink = frontendUrl.replaceAll("/$", "") + "/password-reset?token=" + token;
 
         // Send the email
         mailer.send(Mail.withText(
