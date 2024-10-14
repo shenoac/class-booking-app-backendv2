@@ -8,6 +8,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Path("/bookings")
 @Produces(MediaType.APPLICATION_JSON)
@@ -53,6 +54,25 @@ public class BookingResource {
             e.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Booking creation failed").build();
+        }
+    }
+
+    @GET
+    @Path("/my-bookings")
+    public Response getMyBookings(@HeaderParam("Authorization") String token) {
+        try {
+            // Extract email from token
+            String email = JwtUtil.extractEmailFromToken(token);
+
+            // Fetch bookings for this user
+            List<Booking> bookings = bookingService.getBookingsByUserEmail(email);
+
+            // Return the bookings in the response
+            return Response.ok(bookings).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("Invalid or missing token").build();
         }
     }
 }

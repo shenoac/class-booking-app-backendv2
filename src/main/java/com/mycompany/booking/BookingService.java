@@ -10,6 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @ApplicationScoped
 public class BookingService {
@@ -64,6 +65,17 @@ public class BookingService {
 
         // Log success
         System.out.println("Booking created successfully!");
+    }
+
+    public List<Booking> getBookingsByUserEmail(String email) {
+        // Find the user by email (if necessary)
+        User user = userService.findUserByEmail(email);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        // Fetch bookings by user ID
+        return bookingRepository.find("user", user).list();
     }
 }
 
