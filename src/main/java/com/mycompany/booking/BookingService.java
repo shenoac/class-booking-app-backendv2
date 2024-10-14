@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class BookingService {
@@ -67,15 +68,44 @@ public class BookingService {
         System.out.println("Booking created successfully!");
     }
 
-    public List<Booking> getBookingsByUserEmail(String email) {
+    public List<BookingDTO> getBookingsByUserEmail(String email) {
         // Find the user by email (if necessary)
         User user = userService.findUserByEmail(email);
         if (user == null) {
             throw new IllegalArgumentException("User not found");
         }
 
-        // Fetch bookings by user ID
-        return bookingRepository.find("user", user).list();
+        // Fetch bookings by user ID and create BookingDTO to include class name
+        return bookingRepository.find("user", user)
+                .stream()
+                .map(booking -> new BookingDTO(
+                        booking.getId(),
+                        booking.getBookedClass().getClassName(),  // Include class name
+                        booking.getBookingDate(),
+                        booking.getStatus(),
+                        booking.getPaymentStatus()
+                ))
+                .collect(Collectors.toList());
     }
+
+    @Transactional
+    public boolean deleteBooking(Long bookingId, String email) {
+        // Find the user by email
+        User user = userService.findUserByEmail(email);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        // Find the booking by ID and ensure the user owns it
+        Booking booking = bookingRepository.findById(bookingId);
+        if (booking != null && booking.getUser().equals(user)) {
+            bookingRepository.delete(booking);
+            return true; // Deletion successful
+        }
+
+        return false; // Booking not found or user does not own the booking
+    }
+
+
 }
 

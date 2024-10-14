@@ -65,7 +65,7 @@ public class BookingResource {
             String email = JwtUtil.extractEmailFromToken(token);
 
             // Fetch bookings for this user
-            List<Booking> bookings = bookingService.getBookingsByUserEmail(email);
+            List<BookingDTO> bookings = bookingService.getBookingsByUserEmail(email);
 
             // Return the bookings in the response
             return Response.ok(bookings).build();
@@ -75,4 +75,26 @@ public class BookingResource {
                     .entity("Invalid or missing token").build();
         }
     }
+
+    @DELETE
+    @Path("/delete/{id}")
+    public Response deleteBooking(@HeaderParam("Authorization") String token, @PathParam("id") Long bookingId) {
+        try {
+            // Validate the token
+            String email = JwtUtil.extractEmailFromToken(token);
+
+            // Call the service to delete the booking
+            boolean success = bookingService.deleteBooking(bookingId, email);
+
+            if (success) {
+                return Response.ok("Booking deleted successfully").build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).entity("Booking not found or unauthorized").build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid or missing token").build();
+        }
+    }
+
 }
