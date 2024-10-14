@@ -31,6 +31,12 @@ public class UserService {
     @ConfigProperty(name = "app.server.url")
     String serverUrl;
 
+    public User findUserByEmail(String email) {
+        TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class);
+        query.setParameter("email", email);
+        return query.getResultStream().findFirst().orElse(null);  // Return user if found, else null
+    }
+
     public boolean resetPassword(String token, String newPassword) {
         try {
             // Parse and validate the JWT token
