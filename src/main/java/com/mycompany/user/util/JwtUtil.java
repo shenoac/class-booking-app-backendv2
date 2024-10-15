@@ -14,9 +14,10 @@ public class JwtUtil {
     // Decode Base64 key for internal use
     private static final byte[] SECRET_KEY = Base64.getDecoder().decode(BASE64_ENCODED_SECRET_KEY);
 
-    public static String generateToken(String username) {
+    public static String generateToken(String username, String role) {
         return Jwts.builder()
                 .setSubject(username)
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 3600000)) // 1 hour expiration
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
@@ -55,4 +56,22 @@ public class JwtUtil {
         // Extract the email from claims
         return claims.getSubject();
     }
+
+    public static String extractRoleFromToken(String token) {
+        // Remove "Bearer " prefix if present
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
+        // Parse the token to get claims
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        // Extract the role from claims
+        return (String) claims.get("role");  // Get the "role" claim
+    }
+
 }

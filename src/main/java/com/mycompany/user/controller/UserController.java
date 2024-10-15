@@ -40,7 +40,8 @@ public class UserController {
         }
 
         // Generate JWT token with user role using JwtUtil
-        String token = JwtUtil.generateToken(user.email);
+        String token = JwtUtil.generateToken(user.getEmail(), user.getRole());
+
 
         return Response.ok(new TokenResponse(token)).build();
     }

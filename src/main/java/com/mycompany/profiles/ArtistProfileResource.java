@@ -18,9 +18,19 @@ public class ArtistProfileResource {
     @Path("/create-or-update")
     public Response createOrUpdateProfile(@HeaderParam("Authorization") String token, ArtistProfileRequest request) {
         try {
-            String email = JwtUtil.extractEmailFromToken(token);  // Extract email from JWT token
-            ArtistProfile profile = artistProfileService.createOrUpdateProfile(email, request.getBio(), request.getExhibitions());
+            // Extract email and role from token
+            String email = JwtUtil.extractEmailFromToken(token);
+            String role = JwtUtil.extractRoleFromToken(token);
+
+            // Check if the user is an artist
+            if (!"artist".equals(role)) {
+                return Response.status(Response.Status.FORBIDDEN).entity("Only artists can update their profile").build();
+            }
+
+            // Update profile
+            ArtistProfile profile = artistProfileService.createOrUpdateProfile(email, request.getArtistName(), request.getBio(), request.getExhibitions(), request.getEducation());
             return Response.ok(profile).build();
+
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }

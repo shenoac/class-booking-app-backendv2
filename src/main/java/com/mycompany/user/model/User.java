@@ -48,4 +48,6 @@ public class User extends PanacheEntity {
     public String getRole() {
         return role;
     }
+
+    public String getEmail() { return email;}
 }

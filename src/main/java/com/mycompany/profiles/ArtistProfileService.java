@@ -16,7 +16,7 @@ public class ArtistProfileService {
     UserService userService;  // Service to retrieve user info based on email
 
     @Transactional
-    public ArtistProfile createOrUpdateProfile(String email, String bio, String exhibitions) {
+    public ArtistProfile createOrUpdateProfile(String email, String artistName, String bio, String exhibitions, String education) {
         // Find user by email
         User user = userService.findUserByEmail(email);
         if (user == null) {
@@ -31,8 +31,10 @@ public class ArtistProfileService {
         }
 
         // Update profile fields
+        profile.setArtistName(artistName);
         profile.setBio(bio);
         profile.setExhibitions(exhibitions);
+        profile.setEducation(education);
 
         // Save or update profile in the database
         artistProfileRepository.persist(profile);
@@ -52,6 +54,4 @@ public class ArtistProfileService {
     public ArtistProfile getProfileByArtistName(String artistName) {
         return artistProfileRepository.find("artistName", artistName).firstResult(); // No underscore, camelCase if the field is artistName
     }
-
-
 }
