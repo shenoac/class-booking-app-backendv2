@@ -1,5 +1,6 @@
 package com.mycompany.classes;
 
+import com.mycompany.profiles.ArtistProfile;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,14 +13,20 @@ public class Class {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "artist_id")
-    private Integer artistId;
+    @ManyToOne  // Define the relationship to the ArtistProfile entity
+    @JoinColumn(name = "artist_id", referencedColumnName = "id", nullable = false) // artist_id in 'classes' references 'id' in 'artist_profiles'
+    private ArtistProfile artistProfile;
 
     @Column(name = "class_name")
     private String className;
 
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "price")
     private BigDecimal price;
+
+    @Column(name = "schedule")
     private LocalDateTime schedule;
 
     @Column(name = "max_capacity")
@@ -40,12 +47,12 @@ public class Class {
         this.id = id;
     }
 
-    public Integer getArtistId() {
-        return artistId;
+    public ArtistProfile getArtistProfile() {
+        return artistProfile;
     }
 
-    public void setArtistId(Integer artistId) {
-        this.artistId = artistId;
+    public void setArtistProfile(ArtistProfile artistProfile) {
+        this.artistProfile = artistProfile;
     }
 
     public String getClassName() {
@@ -96,4 +103,3 @@ public class Class {
         this.bookedSlots = bookedSlots;
     }
 }
-
