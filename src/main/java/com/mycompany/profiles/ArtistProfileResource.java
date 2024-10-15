@@ -23,7 +23,7 @@ public class ArtistProfileResource {
             String role = JwtUtil.extractRoleFromToken(token);
 
             // Check if the user is an artist
-            if (!"artist".equals(role)) {
+            if (!"ARTIST".equals(role)) {
                 return Response.status(Response.Status.FORBIDDEN).entity("Only artists can update their profile").build();
             }
 

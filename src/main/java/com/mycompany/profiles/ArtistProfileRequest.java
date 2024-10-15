@@ -5,7 +5,7 @@ public class ArtistProfileRequest {
     private String bio;
     private String exhibitions;
     private String education;
-    private String socialLinks;
+
 
     // Getters and setters
     public String getArtistName() {
@@ -38,13 +38,5 @@ public class ArtistProfileRequest {
 
     public void setEducation(String education) {
         this.education = education;
-    }
-
-    public String getSocialLinks() {
-        return socialLinks;
-    }
-
-    public void setSocialLinks(String socialLinks) {
-        this.socialLinks = socialLinks;
     }
 }

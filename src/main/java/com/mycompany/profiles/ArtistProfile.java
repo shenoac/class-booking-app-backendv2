@@ -22,9 +22,6 @@ public class ArtistProfile {
     @Column(name = "exhibitions", columnDefinition = "TEXT")
     private String exhibitions;
 
-    @Column(name = "social_links", columnDefinition = "JSONB")
-    private String socialLinks;
-
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -74,14 +71,6 @@ public class ArtistProfile {
 
     public void setExhibitions(String exhibitions) {
         this.exhibitions = exhibitions;
-    }
-
-    public String getSocialLinks() {
-        return socialLinks;
-    }
-
-    public void setSocialLinks(String socialLinks) {
-        this.socialLinks = socialLinks;
     }
 
     public LocalDateTime getCreatedAt() {
