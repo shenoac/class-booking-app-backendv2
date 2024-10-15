@@ -13,8 +13,8 @@ public class Class {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne  // Define the relationship to the ArtistProfile entity
-    @JoinColumn(name = "artist_id", referencedColumnName = "id", nullable = false) // artist_id in 'classes' references 'id' in 'artist_profiles'
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "artist_id", referencedColumnName = "user_id", nullable = false)  // artist_id in classes references user_id in artist_profiles
     private ArtistProfile artistProfile;
 
     @Column(name = "class_name")

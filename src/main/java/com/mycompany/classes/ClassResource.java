@@ -16,6 +16,6 @@ public class ClassResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Class> getAllClasses() {
-        return classRepository.listAll();  // Fetch all classes from the repository
+        return classRepository.listAll();
     }
 }
