@@ -22,16 +22,27 @@ public class ArtistProfile {
     @Column(name = "exhibitions", columnDefinition = "TEXT")
     private String exhibitions;
 
+    @Column(name = "social_links", columnDefinition = "JSONB")
+    private String socialLinks;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "artist_name")
+    private String artistName;
+
+    @Column(name = "education", columnDefinition = "TEXT")
+    private String education;
+
     public ArtistProfile() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
+
+    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -65,6 +76,14 @@ public class ArtistProfile {
         this.exhibitions = exhibitions;
     }
 
+    public String getSocialLinks() {
+        return socialLinks;
+    }
+
+    public void setSocialLinks(String socialLinks) {
+        this.socialLinks = socialLinks;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -79,5 +98,21 @@ public class ArtistProfile {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
+    public String getEducation() {
+        return education;
+    }
+
+    public void setEducation(String education) {
+        this.education = education;
     }
 }

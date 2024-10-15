@@ -48,4 +48,10 @@ public class ArtistProfileService {
         // Retrieve the profile by user
         return artistProfileRepository.find("user", user).firstResult();
     }
+
+    public ArtistProfile getProfileByArtistName(String artistName) {
+        return artistProfileRepository.find("artistName", artistName).firstResult(); // No underscore, camelCase if the field is artistName
+    }
+
+
 }

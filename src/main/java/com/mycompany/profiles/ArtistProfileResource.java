@@ -25,16 +25,18 @@ public class ArtistProfileResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
-
     @GET
-    @Path("/view")
-    public Response getProfile(@HeaderParam("Authorization") String token) {
+    @Path("/view/{artistName}")
+    public Response getProfileByArtistName(@PathParam("artistName") String artistName) {
         try {
-            String email = JwtUtil.extractEmailFromToken(token);
-            ArtistProfile profile = artistProfileService.getProfileByEmail(email);
+            ArtistProfile profile = artistProfileService.getProfileByArtistName(artistName);
+            if (profile == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("Profile not found").build();
+            }
             return Response.ok(profile).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
+
 }
