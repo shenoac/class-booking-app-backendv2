@@ -21,32 +21,32 @@ public class BookingResource {
     @POST
     @Path("/create")
     public Response createBooking(
-            @HeaderParam("Authorization") String token,  // Get the token from the header
-            @FormParam("classId") Long classId) {  // Get the classId from the request
+            @HeaderParam("Authorization") String token,
+            @FormParam("classId") Long classId) {
 
         try {
-            // Step 1: Validate the token is present
+
             if (token == null || token.isEmpty()) {
                 return Response.status(Response.Status.UNAUTHORIZED)
                         .entity("Missing or invalid token").build();
             }
 
-            // Step 2: Extract email from the token
+
             String email;
             try {
-                email = JwtUtil.extractEmailFromToken(token);  // Extract email from token
+                email = JwtUtil.extractEmailFromToken(token);
             } catch (Exception e) {
                 return Response.status(Response.Status.UNAUTHORIZED)
                         .entity("Invalid token").build();
             }
 
-            // Step 3: Validate that classId is provided
+
             if (classId == null) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("Missing classId").build();
             }
 
-            // Step 4: Call the booking service to handle the booking
+
             bookingService.createBooking(email, classId);
 
             return Response.ok("Booking created successfully").build();
@@ -61,13 +61,13 @@ public class BookingResource {
     @Path("/my-bookings")
     public Response getMyBookings(@HeaderParam("Authorization") String token) {
         try {
-            // Extract email from token
+
             String email = JwtUtil.extractEmailFromToken(token);
 
-            // Fetch bookings for this user
+
             List<BookingDTO> bookings = bookingService.getBookingsByUserEmail(email);
 
-            // Return the bookings in the response
+
             return Response.ok(bookings).build();
         } catch (Exception e) {
             e.printStackTrace();
@@ -80,10 +80,10 @@ public class BookingResource {
     @Path("/delete/{id}")
     public Response deleteBooking(@HeaderParam("Authorization") String token, @PathParam("id") Long bookingId) {
         try {
-            // Validate the token
+
             String email = JwtUtil.extractEmailFromToken(token);
 
-            // Call the service to delete the booking
+
             boolean success = bookingService.deleteBooking(bookingId, email);
 
             if (success) {

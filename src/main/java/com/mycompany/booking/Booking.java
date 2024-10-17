@@ -30,7 +30,7 @@ public class Booking {
     @Column(name = "payment_status")
     private String paymentStatus;
 
-    // Getters and setters
+
     public Long getId() {
         return id;
     }
