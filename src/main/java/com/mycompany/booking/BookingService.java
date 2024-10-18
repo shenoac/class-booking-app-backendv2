@@ -29,28 +29,23 @@ public class BookingService {
     public void createBooking(String email, Long classId) {
 
         System.out.println("Finding user with email: " + email);
-
-
         User user = userService.findUserByEmail(email);
         if (user == null) {
             throw new IllegalArgumentException("User not found");
         }
-        System.out.println("User found: ");
-
 
         System.out.println("Finding class with ID: " + classId);
-
-
         Class bookedClass = classRepository.findById(classId);
         if (bookedClass == null) {
             throw new IllegalArgumentException("Class not found");
         }
-        System.out.println("Class found: " + bookedClass.getClassName());
 
+        // Check if the class is fully booked
+        if (bookedClass.getBookedSlots() >= bookedClass.getMaxCapacity()) {
+            throw new IllegalArgumentException("Class is fully booked");
+        }
 
         System.out.println("Creating new booking...");
-
-
         Booking booking = new Booking();
         booking.setUser(user);
         booking.setBookedClass(bookedClass);
@@ -58,12 +53,12 @@ public class BookingService {
         booking.setStatus("pending");
         booking.setPaymentStatus("pending");
 
-
         System.out.println("Saving booking...");
-
-
         bookingRepository.persist(booking);
 
+        // Increment the booked slots after booking is created
+        bookedClass.setBookedSlots(bookedClass.getBookedSlots() + 1);
+        classRepository.persist(bookedClass);
 
         System.out.println("Booking created successfully!");
     }
@@ -74,7 +69,6 @@ public class BookingService {
         if (user == null) {
             throw new IllegalArgumentException("User not found");
         }
-
 
         return bookingRepository.find("user", user)
                 .stream()
@@ -96,20 +90,24 @@ public class BookingService {
             throw new IllegalArgumentException("User not found");
         }
 
-
         Booking booking = bookingRepository.findById(bookingId);
         if (booking != null && booking.getUser().equals(user)) {
+            Class bookedClass = booking.getBookedClass();
+
             bookingRepository.delete(booking);
+
+            // Decrement the booked slots after booking is deleted
+            bookedClass.setBookedSlots(bookedClass.getBookedSlots() - 1);
+            classRepository.persist(bookedClass);
+
             return true;
         }
 
         return false;
     }
 
-        public Booking getBookingById(Long bookingId) {
-            return bookingRepository.findById(bookingId);
-        }
-
-
+    public Booking getBookingById(Long bookingId) {
+        return bookingRepository.findById(bookingId);
+    }
 }
 
