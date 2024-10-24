@@ -1,35 +1,35 @@
-# Use the openjdk image as the base image
-FROM openjdk:17-slim AS build
-
-# Install Maven 3.8.7 manually
-ENV MAVEN_VERSION=3.8.7
-ENV MAVEN_HOME=/opt/maven
-ENV PATH=${MAVEN_HOME}/bin:${PATH}
-
-# Install Maven dependencies and tools
-RUN apt-get update && \
-    apt-get install -y curl tar && \
-    curl -fsSL https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz | \
-    tar xz -C /opt && \
-    mv /opt/apache-maven-${MAVEN_VERSION} ${MAVEN_HOME} && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Set the environment variable for binding to 0.0.0.0 in Docker
-ENV QUARKUS_HTTP_HOST=0.0.0.0
+# Stage 1: Build the Native Image using GraalVM
+FROM quay.io/quarkus/ubi-quarkus-native-image:22.3-java17 AS build
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the pom.xml and download dependencies
+# Copy the Maven wrapper and pom.xml
+COPY mvnw mvnw.cmd ./
+COPY .mvn .mvn
 COPY pom.xml ./
-RUN mvn dependency:go-offline
 
-# Copy the entire source code, including application.properties
+# Download Maven dependencies
+RUN ./mvnw dependency:go-offline
+
+# Copy the entire source code
 COPY src ./src
-COPY src/main/resources/application.properties ./src/main/resources/application.properties
 
-# Expose the Quarkus default port
+# Build the native executable using GraalVM
+RUN ./mvnw package -Pnative -Dquarkus.native.container-build=true
+
+# Stage 2: Create the minimal image to run the native executable
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.7
+
+WORKDIR /work/
+COPY --from=build /app/target/*-runner /work/application
+
+# Expose the port for the app
 EXPOSE 8080
 
-# Run Quarkus in dev mode
-CMD ["mvn", "quarkus:dev"]
+# Use a non-root user for better security
+RUN chmod 775 /work/application && chown -R 1001 /work
+USER 1001
+
+# Run the native executable with the correct host binding
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]
