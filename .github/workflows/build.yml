@@ -1,0 +1,54 @@
+name: Build and Deploy to Heroku
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          graalvm-version: "22.3.1"
+          java-version: "17"
+
+
+      - name: Set up Maven
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+
+      - name: Build Quarkus Native Binary
+        run: |
+          ./mvnw package -Pnative -Dquarkus.native.container-build=true
+
+
+      - name: Log in to Heroku Container Registry
+        run: echo "$HEROKU_API_KEY" | docker login --username="$HEROKU_USERNAME" --password-stdin registry.heroku.com
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_USERNAME: ${{ secrets.HEROKU_USERNAME }}
+
+
+      - name: Push Docker image to Heroku
+        run: |
+          docker tag class-booking-app-backend-prod registry.heroku.com/class-booking-app-backend/web
+          docker push registry.heroku.com/class-booking-app-backend/web
+
+
+      - name: Release Heroku app
+        run: heroku container:release web -a class-booking-app-backend
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_USERNAME: ${{ secrets.HEROKU_USERNAME }}
