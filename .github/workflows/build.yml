@@ -30,7 +30,7 @@ jobs:
           ./mvnw package -Pnative -Dquarkus.native.container-build=true
 
       - name: Upload built binary as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: quarkus-native-binary
           path: ./target/*-runner
