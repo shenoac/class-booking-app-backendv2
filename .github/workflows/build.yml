@@ -32,6 +32,6 @@ jobs:
 
       - name: Upload binary to Heroku
         run: |
-          git push https://heroku:$HEROKU_API_KEY@git.heroku.com/YOUR_HEROKU_APP.git HEAD:main
+          git push https://heroku:$HEROKU_API_KEY@git.heroku.com/class-booking-app-backend.git HEAD:main
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
