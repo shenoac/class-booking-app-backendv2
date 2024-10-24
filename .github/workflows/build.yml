@@ -1,4 +1,4 @@
-name: Build and Deploy to Heroku
+name: Build Quarkus Native Binary
 
 on:
   push:
@@ -6,11 +6,10 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -30,8 +29,8 @@ jobs:
         run: |
           ./mvnw package -Pnative -Dquarkus.native.container-build=true
 
-      - name: Upload binary to Heroku
-        run: |
-          git push https://heroku:$HEROKU_API_KEY@git.heroku.com/class-booking-app-backend.git HEAD:main
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      - name: Upload built binary as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: quarkus-native-binary
+          path: ./target/*-runner
