@@ -33,6 +33,10 @@ jobs:
         run: |
           ./mvnw package -Pnative -Dquarkus.native.container-build=true
 
+      - name: Build Docker image
+        run: |
+          docker build --platform linux/amd64 -t class-booking-app-backend-prod .
+
 
       - name: Log in to Heroku Container Registry
         run: echo "$HEROKU_API_KEY" | docker login --username="$HEROKU_USERNAME" --password-stdin registry.heroku.com
