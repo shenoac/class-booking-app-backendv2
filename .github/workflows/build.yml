@@ -30,23 +30,8 @@ jobs:
         run: |
           ./mvnw package -Pnative -Dquarkus.native.container-build=true
 
-      - name: Build Docker image
+      - name: Upload binary to Heroku
         run: |
-          docker build --platform linux/amd64 -t class-booking-app-backend-prod .
-
-      - name: Log in to Heroku Container Registry
-        run: echo "$HEROKU_API_KEY" | docker login --username="$HEROKU_USERNAME" --password-stdin registry.heroku.com
+          git push https://heroku:$HEROKU_API_KEY@git.heroku.com/YOUR_HEROKU_APP.git HEAD:main
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_USERNAME: ${{ secrets.HEROKU_USERNAME }}
-
-      - name: Push Docker image to Heroku
-        run: |
-          docker tag class-booking-app-backend-prod registry.heroku.com/class-booking-app-backend/web
-          docker push registry.heroku.com/class-booking-app-backend/web
-
-      - name: Release Heroku app
-        run: heroku container:release web -a class-booking-app-backend
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_USERNAME: ${{ secrets.HEROKU_USERNAME }}
