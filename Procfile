@@ -1,1 +1,1 @@
-web: ./target/class-booking-app-backend-1.0.0-SNAPSHOT-runner -Dquarkus.http.port=$PORT
+web: ./target/class-booking-app-backend-1.0.0-SNAPSHOT-runner -Dquarkus.profile=prod -Dquarkus.http.port=$PORT
