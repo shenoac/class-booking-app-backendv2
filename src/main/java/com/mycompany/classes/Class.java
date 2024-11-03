@@ -1,6 +1,6 @@
 package com.mycompany.classes;
 
-import com.mycompany.profiles.ArtistProfile;
+import com.mycompany.model.ArtistProfile;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
