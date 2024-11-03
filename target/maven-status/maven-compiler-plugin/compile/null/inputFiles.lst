@@ -1,8 +1,3 @@
-/Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/booking/Booking.java
-/Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/booking/BookingRepository.java
-/Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/booking/BookingService.java
-/Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/classes/Class.java
-/Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/classes/ClassRepository.java
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/controller/ArtistController.java
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/controller/ArtistProfileResource.java
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/controller/BookingResource.java
@@ -21,9 +16,14 @@
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/dto/PaymentRequest.java
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/dto/UserDTO.java
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/model/ArtistProfile.java
+/Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/model/Booking.java
+/Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/model/Class.java
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/model/User.java
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/repository/ArtistProfileRepository.java
+/Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/repository/BookingRepository.java
+/Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/repository/ClassRepository.java
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/service/ArtistProfileService.java
+/Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/service/BookingService.java
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/service/PaymentDetailsService.java
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/service/PaymentService.java
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/service/UserService.java

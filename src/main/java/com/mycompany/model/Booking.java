@@ -1,7 +1,4 @@
-package com.mycompany.booking;
-
-import com.mycompany.model.User;
-import com.mycompany.classes.Class;
+package com.mycompany.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

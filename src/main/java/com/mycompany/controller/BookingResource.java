@@ -1,7 +1,7 @@
 package com.mycompany.controller;
 
 import com.mycompany.dto.BookingDTO;
-import com.mycompany.booking.BookingService;
+import com.mycompany.service.BookingService;
 import com.mycompany.util.JwtUtil;
 
 import jakarta.inject.Inject;

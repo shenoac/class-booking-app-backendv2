@@ -1,8 +1,7 @@
 package com.mycompany.service;
 
-import com.mycompany.booking.BookingService;
-import com.mycompany.booking.Booking;
-import com.mycompany.classes.Class;
+import com.mycompany.model.Booking;
+import com.mycompany.model.Class;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

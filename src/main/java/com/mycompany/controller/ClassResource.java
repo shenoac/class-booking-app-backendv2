@@ -1,7 +1,7 @@
 package com.mycompany.controller;
 
-import com.mycompany.classes.Class;
-import com.mycompany.classes.ClassRepository;
+import com.mycompany.model.Class;
+import com.mycompany.repository.ClassRepository;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -20,7 +20,7 @@ public class ClassResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<com.mycompany.classes.Class> getAllClasses() {
+    public List<Class> getAllClasses() {
         return classRepository.listAll();
     }
 

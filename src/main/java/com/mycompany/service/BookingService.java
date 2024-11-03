@@ -1,10 +1,11 @@
-package com.mycompany.booking;
+package com.mycompany.service;
 
-import com.mycompany.classes.Class;
-import com.mycompany.classes.ClassRepository;
+import com.mycompany.model.Booking;
+import com.mycompany.repository.BookingRepository;
+import com.mycompany.model.Class;
+import com.mycompany.repository.ClassRepository;
 import com.mycompany.dto.BookingDTO;
 import com.mycompany.model.User;
-import com.mycompany.service.UserService;
 
 import jakarta.inject.Inject;
 import jakarta.enterprise.context.ApplicationScoped;
