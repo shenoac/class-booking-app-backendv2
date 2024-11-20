@@ -8,14 +8,11 @@ import io.jsonwebtoken.SignatureException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.logging.Logger;
+
 
 public class JwtUtil {
 
-    private static final Logger LOGGER = Logger.getLogger(JwtUtil.class.getName());
-
-
-    private static final String SECRET_KEY;
+   private static final String SECRET_KEY;
 
     static {
         Dotenv dotenv = Dotenv.configure()
@@ -29,17 +26,15 @@ public class JwtUtil {
         // Use the first non-null key found
         SECRET_KEY = envKey != null ? envKey : (systemKey != null ? systemKey : "defaultFallbackSecret");
 
-        LOGGER.info("JWT Secret Key initialized: " + SECRET_KEY);
-        LOGGER.info("JWT Secret Key length (in bits): " + (SECRET_KEY.getBytes(StandardCharsets.UTF_8).length * 8));
     }
 
 
     // Method to return the secret key as a byte array
     public static byte[] getSecretKey() {
-        return SECRET_KEY.getBytes(StandardCharsets.UTF_8); // Used by UserService
+        return SECRET_KEY.getBytes(StandardCharsets.UTF_8);
     }
 
-    // Optional: Method to return the secret key as a String
+    // Method to return the secret key as a String
     public static String getSecretKeyAsString() {
         return SECRET_KEY;
     }
@@ -55,34 +50,38 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Validate a JWT token
+    private static Claims parseToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSecretKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
     public static Claims validateToken(String token) {
         try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(getSecretKey()) // Use byte[] for validation
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+            return parseToken(token);
         } catch (SignatureException e) {
             throw new RuntimeException("Invalid JWT token", e);
         }
     }
 
-    // Extract email from token
-    public static String extractEmailFromToken(String token) {
+
+    private static String stripBearerPrefix(String token) {
         if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
+            return token.substring(7);
         }
-        Claims claims = validateToken(token);
+        return token;
+    }
+
+    public static String extractEmailFromToken(String token) {
+        Claims claims = validateToken(stripBearerPrefix(token));
         return claims.getSubject();
     }
 
-    // Extract role from token
     public static String extractRoleFromToken(String token) {
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
-        }
-        Claims claims = validateToken(token);
-        return (String) claims.get("role");
+        Claims claims = validateToken(stripBearerPrefix(token));
+        Object role = claims.get("role");
+        return role != null ? role.toString() : null;
     }
 }
