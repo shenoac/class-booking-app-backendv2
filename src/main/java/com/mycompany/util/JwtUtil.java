@@ -62,9 +62,12 @@ public class JwtUtil {
         try {
             return parseToken(token);
         } catch (SignatureException e) {
-            throw new RuntimeException("Invalid JWT token", e);
+            throw new JwtValidationException("Invalid JWT token signature", e);
+        } catch (Exception e) {
+            throw new JwtValidationException("Error validating JWT token", e);
         }
     }
+
 
 
     private static String stripBearerPrefix(String token) {

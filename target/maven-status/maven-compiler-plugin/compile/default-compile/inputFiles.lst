@@ -28,4 +28,5 @@
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/service/PaymentService.java
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/service/UserService.java
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/util/JwtUtil.java
+/Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/util/JwtValidationException.java
 /Users/shenoachee/class-booking-app/class-booking-app-backend/src/main/java/com/mycompany/util/TokenResponse.java
