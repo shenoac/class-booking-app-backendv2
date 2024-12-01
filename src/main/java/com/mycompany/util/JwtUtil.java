@@ -1,77 +1,90 @@
 package com.mycompany.util;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
-import java.util.Base64;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+
 public class JwtUtil {
-    // Base64-encoded secret key
-    private static final String BASE64_ENCODED_SECRET_KEY = "TzcmWWRvYXohdGIkanZJVnNVU3ljN3FPTk02WHJtQUY3azl0YlMmPw==";
 
-    // Decode Base64 key for internal use
-    private static final byte[] SECRET_KEY = Base64.getDecoder().decode(BASE64_ENCODED_SECRET_KEY);
+   private static final String SECRET_KEY;
 
+    static {
+        Dotenv dotenv = Dotenv.configure()
+                .ignoreIfMissing() // Don't fail if .env doesn't exist
+                .load();
+
+        // Try to load from .env first
+        String envKey = dotenv.get("JWT_SECRET_KEY");
+        String systemKey = System.getenv("JWT_SECRET_KEY");
+
+        // Use the first non-null key found
+        SECRET_KEY = envKey != null ? envKey : (systemKey != null ? systemKey : "defaultFallbackSecret");
+
+    }
+
+
+    // Method to return the secret key as a byte array
+    public static byte[] getSecretKey() {
+        return SECRET_KEY.getBytes(StandardCharsets.UTF_8);
+    }
+
+    // Method to return the secret key as a String
+    public static String getSecretKeyAsString() {
+        return SECRET_KEY;
+    }
+
+    // Generate a JWT token
     public static String generateToken(String username, String role) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 3600000)) // 1 hour expiration
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .signWith(SignatureAlgorithm.HS256, getSecretKey()) // Use byte[] for signing
                 .compact();
     }
 
-    public static byte[] getSecretKey() {
-        return SECRET_KEY;
+    private static Claims parseToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSecretKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public static Claims validateToken(String token) {
         try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(SECRET_KEY)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+            return parseToken(token);
         } catch (SignatureException e) {
-            throw new RuntimeException("Invalid JWT token", e);
+            throw new JwtValidationException("Invalid JWT token signature", e);
+        } catch (Exception e) {
+            throw new JwtValidationException("Error validating JWT token", e);
         }
     }
 
-    public static String extractEmailFromToken(String token) {
-        // Remove "Bearer " prefix if present
+
+
+    private static String stripBearerPrefix(String token) {
         if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
+            return token.substring(7);
         }
+        return token;
+    }
 
-        // Parse the token to get claims
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        // Extract the email from claims
+    public static String extractEmailFromToken(String token) {
+        Claims claims = validateToken(stripBearerPrefix(token));
         return claims.getSubject();
     }
 
     public static String extractRoleFromToken(String token) {
-        // Remove "Bearer " prefix if present
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
-        }
-
-        // Parse the token to get claims
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        // Extract the role from claims
-        return (String) claims.get("role");  // Get the "role" claim
+        Claims claims = validateToken(stripBearerPrefix(token));
+        Object role = claims.get("role");
+        return role != null ? role.toString() : null;
     }
-
 }

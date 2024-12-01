@@ -25,6 +25,7 @@ com/mycompany/controller/BookingResource.class
 com/mycompany/controller/ArtistController.class
 com/mycompany/service/ArtistProfileService.class
 com/mycompany/repository/ArtistProfileRepository.class
+com/mycompany/util/JwtValidationException.class
 com/mycompany/dto/PasswordResetRequestDTO.class
 com/mycompany/service/BookingService.class
 com/mycompany/service/PaymentService.class
