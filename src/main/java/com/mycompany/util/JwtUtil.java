@@ -9,44 +9,36 @@ import io.jsonwebtoken.SignatureException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-
 public class JwtUtil {
 
-   private static final String SECRET_KEY;
+    private static final String SECRET_KEY;
 
     static {
         Dotenv dotenv = Dotenv.configure()
-                .ignoreIfMissing() // Don't fail if .env doesn't exist
+                .ignoreIfMissing()
                 .load();
 
-        // Try to load from .env first
         String envKey = dotenv.get("JWT_SECRET_KEY");
         String systemKey = System.getenv("JWT_SECRET_KEY");
 
-        // Use the first non-null key found
         SECRET_KEY = envKey != null ? envKey : (systemKey != null ? systemKey : "defaultFallbackSecret");
-
     }
 
-
-    // Method to return the secret key as a byte array
     public static byte[] getSecretKey() {
         return SECRET_KEY.getBytes(StandardCharsets.UTF_8);
     }
 
-    // Method to return the secret key as a String
     public static String getSecretKeyAsString() {
         return SECRET_KEY;
     }
 
-    // Generate a JWT token
     public static String generateToken(String username, String role) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000)) // 1 hour expiration
-                .signWith(SignatureAlgorithm.HS256, getSecretKey()) // Use byte[] for signing
+                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
+                .signWith(SignatureAlgorithm.HS256, getSecretKey())
                 .compact();
     }
 
@@ -68,9 +60,7 @@ public class JwtUtil {
         }
     }
 
-
-
-    private static String stripBearerPrefix(String token) {
+    static String stripBearerPrefix(String token) {
         if (token != null && token.startsWith("Bearer ")) {
             return token.substring(7);
         }
