@@ -17,7 +17,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 @Path("/artist")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class ArtistController {
+public class ArtistResource {
 
     @Inject
     UserService userService;
