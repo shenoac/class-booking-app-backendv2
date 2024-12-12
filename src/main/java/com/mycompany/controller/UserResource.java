@@ -18,7 +18,7 @@ import jakarta.transaction.TransactionManager;
 @Path("/auth")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class UserController {
+public class UserResource {
 
     @Inject
     UserService userService; // Inject UserService
