@@ -1,19 +1,19 @@
+
 package com.mycompany.controller;
 
 import com.mycompany.dto.*;
 import com.mycompany.util.TokenResponse;
 import com.mycompany.model.User;
 import com.mycompany.util.JwtUtil;
-import com.mycompany.service.UserService; // Import UserService
+import com.mycompany.service.UserService;
 import jakarta.annotation.security.PermitAll;
-import jakarta.inject.Inject; // Import Inject
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import io.quarkus.elytron.security.common.BcryptUtil;
-import jakarta.transaction.TransactionManager;
 
 @Path("/auth")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -21,32 +21,11 @@ import jakarta.transaction.TransactionManager;
 public class UserResource {
 
     @Inject
-    UserService userService; // Inject UserService
-
-    @Inject
-    TransactionManager transactionManager;
-
-    // Login endpoint to authenticate users and generate JWT
-    @POST
-    @Path("/login")
-    @PermitAll
-    public Response login(@Valid LoginDTO loginDTO) {
-        // Find user by email
-        User user = User.find("email", loginDTO.email).firstResult();
-
-        // Check if user exists and has activated their account
-        if (user == null || !user.activated || !BcryptUtil.matches(loginDTO.password, user.password)) {
-            return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid credentials or account not activated").build();
-        }
-
-        // Generate JWT token with user role using JwtUtil
-        String token = JwtUtil.generateToken(user.getEmail(), user.getRole());
+    UserService userService;
 
 
-        return Response.ok(new TokenResponse(token)).build();
-    }
+    // --- Registration Methods ---
 
-    // Register a new buyer
     @POST
     @Path("/register/buyer")
     @PermitAll
@@ -54,16 +33,13 @@ public class UserResource {
     public Response registerBuyer(@Valid UserDTO userDTO) {
         Response response = registerWithRole(userDTO, "BUYER");
 
-        // If registration is successful, send verification email
         if (response.getStatus() == Response.Status.OK.getStatusCode()) {
-            userService.sendEmailVerificationToken(userDTO.email);  // Send verification email
+            userService.sendEmailVerificationToken(userDTO.email);
         }
 
         return response;
     }
 
-
-    // Register a new artist
     @POST
     @Path("/register/artist")
     @PermitAll
@@ -72,26 +48,50 @@ public class UserResource {
         return registerWithRole(userDTO, "ARTIST");
     }
 
-    // Reusable method for registration with a specific role
     private Response registerWithRole(UserDTO userDTO, String role) {
-        // Check if the user with the same email already exists
         if (User.find("email", userDTO.email).firstResult() != null) {
             return Response.status(Response.Status.CONFLICT).entity("Email already registered").build();
         }
 
-        // Add the user to the database with hashed password and role
         User.add(userDTO.email, userDTO.password, role, userDTO.name);
         return Response.ok("User successfully registered with role: " + role).build();
+    }
+
+    // --- Login and Authentication Methods ---
+
+    @POST
+    @Path("/login")
+    @PermitAll
+    public Response login(@Valid LoginDTO loginDTO) {
+        User user = User.find("email", loginDTO.email).firstResult();
+
+        if (user == null || !user.activated || !BcryptUtil.matches(loginDTO.password, user.password)) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid credentials or account not activated").build();
+        }
+
+        String token = JwtUtil.generateToken(user.getEmail(), user.getRole());
+        return Response.ok(new TokenResponse(token)).build();
+    }
+
+    @POST
+    @Path("/request-password-reset")
+    @PermitAll
+    public Response requestPasswordReset(@Valid PasswordResetRequestDTO request) {
+        boolean isEmailSent = userService.sendPasswordResetToken(request.getEmail());
+
+        if (isEmailSent) {
+            return Response.ok().entity("{\"message\":\"Password reset token generated and logged.\"}").build();
+        } else {
+            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"Email not found.\"}").build();
+        }
     }
 
     @PUT
     @Path("/change-password")
     @Transactional
     public Response changePassword(@HeaderParam("Authorization") String token, @Valid PasswordChangeDTO passwordChangeDTO) {
-        // Extract email from JWT token
         String email = JwtUtil.extractEmailFromToken(token);
 
-        // Delegate password change to UserService
         boolean success = userService.changePassword(email, passwordChangeDTO.getCurrentPassword(), passwordChangeDTO.getNewPassword());
 
         if (success) {
@@ -118,10 +118,8 @@ public class UserResource {
     @Path("/delete-account")
     @Transactional
     public Response deleteAccount(@HeaderParam("Authorization") String token) {
-        // Extract email from JWT token
         String email = JwtUtil.extractEmailFromToken(token);
 
-        // Delegate account deletion to UserService
         boolean success = userService.deleteAccount(email);
 
         if (success) {
@@ -131,18 +129,7 @@ public class UserResource {
         }
     }
 
-    @POST
-    @Path("/request-password-reset")
-    @PermitAll
-    public Response requestPasswordReset(@Valid PasswordResetRequestDTO request) {
-        boolean isEmailSent = userService.sendPasswordResetToken(request.getEmail());
-
-        if (isEmailSent) {
-            return Response.ok().entity("{\"message\":\"Password reset token generated and logged.\"}").build();
-        } else {
-            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"Email not found.\"}").build();
-        }
-    }
+    // --- Email Verification Methods ---
 
     @GET
     @Path("/verify-email")
@@ -156,5 +143,4 @@ public class UserResource {
             return Response.status(Response.Status.BAD_REQUEST).entity("Invalid or expired token.").build();
         }
     }
-
 }
